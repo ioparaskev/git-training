@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Git intro</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# A not so brief introduction to Git
+more shell commands to learn
+
+---
+## **Agenda**
+
+1. [Introduction to what is git](#intro)
+2. [Some theory](#theory)
+3. [Basic use cases](#basic)
+  - [Changing stuff](#changing)
+  - [Staging](#staging)
+  - [Commit](#commit)
+  - [History](#hist)
+  - [Branches](#branch)
+  - [Merging](#merge)
+  - [(Re)move](#delete)
+  - [Undo](#undo)
+  - [Collaboration](#collab)
+4. [More use cases](#moar)
+  - [Tagging](#tag)
+  - [Stashing](#stash)
+  - [More history tricks](#log)
+  - [Gitconfig](#gitconfig)
+  - [Rewriting History](#rhistory)
+  - [Rebase vs merge](#rbm)
+5. [Lightning extras](#extra)
+6. [Git strategies](#workflow)
+7. [Bonus theory](#mtheory)
+
+---
+name: intro
+class: center, middle
+# Introduction
+
+---
+class: center, middle
+# What **is** git
+
+---
+class: center, middle
+something related to graphs?
+
+
+![alt text](images/git_graph.svg "git graph")
+
+---
+class: center, middle
+## git is a **DVCS**
+aka **distributed** version control system
+
+---
+class: center, middle
+**something like svn?**
+
+well not exactly like svn..
+
+---
+class: center, middle
+# Why git is **not** svn
+
+---
+class: center, middle
+# Git is distributed
+
+svn is centralized
+
+---
+class: center, middle
+# Git does not necessarily need a server to use
+
+svn does
+
+---
+class: center, middle
+# Git supports multiple servers in one repo
+
+svn needs a different folder/repo for each
+
+---
+class: center, middle
+# Git supports multiple branches
+
+svn needs a different repo
+
+---
+class: center, middle
+
+# Git has no revision number
+**it has hash numbers*
+
+svn uses revision numbers
+
+---
+class: center, middle
+
+# Git has a staging area
+
+svn does not
+
+---
+class: center, middle
+
+# Git stores file snapshots
+
+svn stores file diffs
+
+---
+class: center, middle
+# Git has offline commits
+
+svn does not
+
+---
+class: center, middle
+
+# Git commands are not the same as svn commands
+
+although some of them sound like the same
+
+---
+class: center, middle
+
+hopefully you'll be able to add more here by the end of the training
+
+---
+class: center, middle
+# so what **is** git?
+
+---
+class: center, middle
+![alt text](images/git.png "What is git")
+
+---
+class: center, middle
+# **Git logic**
+
+---
+class: center, middle
+# Commit early
+
+---
+class: center, middle
+# Branch often
+
+---
+name: theory
+class: center, middle
+# theory time!
+
+---
+name: distributed
+# .center[What does **distributed** mean?]
+
+- A repo doesn't need a server to interact
+- A local repo is completely independent
+  - You can work (commit etc.) without the need for an internet connection
+- A link to a server is called **remote**
+  - the remote repo which resides in the server does not have the same structure
+  - it does not have working files
+  - we can name our remotes whatever we want
+- You can have many remotes
+  - Theoritically each remote can be completely independent to another (different files/folders)
+     - in practice you shouldn't try this because it might result in big folder size
+
+---
+name: branch
+class: middle
+# .center[**Branch stuff #1**]
+- Branches are diversions of you main code base
+- Main code base is also a branch
+  - The first branch’s default name is master
+  - By convention it is used as the main code base branch, but it could be named anything, ie ‘production’
+- Every branch occurs from another branch (except for master)
+  - aka there's a reference that links those two branches to link history
+
+---
+class: middle
+# .center[**Branch stuff #2**]
+- Local branches are not the same as remote branches
+  - A local branch might not reside on the remote
+  - A remote branch will reside locally when you get an update for that remote (more info later)
+- You can link a local branch to point to a remote branch
+
+---
+name: index
+class: middle
+# .center[Staging area aka the **index** #1]
+- Staging area is the area where the changes are "stored" before a commit is
+triggered
+  - This is also called index *(remember this info)*
+- When we say "add to staging area" we mean "update the index"
+
+---
+class: center, middle
+# why **is** this useful?
+
+---
+class: center, middle
+# This means not all changes have to be committed at once
+
+this applies not only to files but on code chunks (parts of files) too
+
+---
+class: center, middle
+![alt text](images/Wat8.jpg "What?")
+
+---
+class: middle
+# .center[Staging area aka the **index** #2]
+- So "commit often" doesn't necessarily mean "make a change and then commit
+it immediately"
+- We can make multiple changes and through the use of the staging area, split
+those changes into multiple commits
+
+---
+class: center, middle
+![alt text](images/55915315.jpg "anything else?")
+
+---
+name: recap
+#.center[**A recap**]
+.center[*and some extra things to remember*]
+- Everything is local
+  - We sometimes choose to share them with the remote(s)
+- Everything stems from a main code base
+- The diversions of the main code base are in branches
+- We use the staging area to mark which of our changes will be commited when we commit
+- **Untracked** means git will not track changes on that file, because file is not considered to be a part of the repo
+- **Not staged** (*or unstaged*) means that changes on that file(s) (or parts of it) will not be
+committed
+- **HEAD** is a reference to the latest commit in your current branch
+
+---
+name: basic
+class: center, middle
+# **Enough with the theory...**
+
+best way to understand is to
+try to put it into work
+
+![alt text](images/2009-01-26-who-needs-git_2.png "get rid of git")
+
+###### last change to escape now
+
+---
+#.center[**First steps**]
+- Inside your project root folder use: **`git init`**
+  - Folder is now a local repo
+- Setup your information (email, name)
+  - You can't make any commits if you haven't configured these somehow
+  - email: **`git config user.email "<email>"`**
+  - name: **`git config user.name "<name>"`**
+- Ignore specific files in project
+  - In project root directory create **`.gitignore`** file
+  - Add the pattern/file path per line for git to ignore
+  - more info about [patterns](http://git-scm.com/docs/gitignore)
+
+---
+name: changing
+#.center[**Changing stuff**]
+- Make some changes into project (create a file or edit an existing)
+- Show current status of the repo
+  - **`git status`**
+     - also shows information on what you might want to do
+  - **`git status -s`**
+     - less talkative, shows abbreviations for current status
+  - **`git status -sb`**
+     - shows current state and branch name
+
+---
+name: staging
+#.center[**Stage files**]
+- Add file to staging area
+  - **`git add <path_to_file>`**
+- Add all files from this path and below to staging area
+  - **`git add .`**
+- Add all files in project to staging area
+  - **`git add -A`**
+- Add all files & ignored in project to staging area
+  - **`git add -Af`**
+  - Then why do you have them in the .gitignore??
+- Add part of file to staging area
+  - **`git add -p <path_to_file>`**
+  - git will start asking about code chunks and whether to stage them or not
+  - press **`?`** to get an explanation about each letter meaning
+
+---
+#.center[**Show changes**]
+- Show changes compared to the HEAD
+  - **`git diff`**
+- Show the staged changes
+  - **`git diff --staged `**
+
+---
+name: commit
+#.center[**Commit staged files**]
+- Commit files stored in the index (staging area)
+  - **`git commit`**
+  - the default editor will pop up showing information about which files will be committed and waiting for a commit message
+- Commit files stored in the index with message
+  - **`git commit -m "<message>"`**
+  - no editor will pop up
+- Combining **`git add -A`** with **`git commit`**
+  - **`git commit -a`**
+  - **`git commit -am "<message>"`** to avoid editor popup
+
+---
+class: center, middle
+![alt text](images/commit.jpg "First Commit!")
+
+---
+name:hist
+#.center[**History lesson**]
+- Show the history of commits
+  - **`git log`**
+- Show the history of commits and what changes were made
+  - **`git log -p`**
+- Show the changes of a commit
+  - **`git show <commit>`**
+
+---
+name: branch
+#.center[**Branch stuff #1**]
+- Create new branch derived from current branch
+  - **`git branch <name_of_branch>`**
+- Create new branch derived from a specifc commit
+  - **`git branch <name_of_branch> <commit>`**
+- Switch to another branch
+  - **`git checkout <name_of_branch>`**
+  - **If there are uncommitted changes**:
+      - If the branch is derived from the current branch and has no other changes they will follow you to the other branch
+      - If the other branch has diverted from the current, you will not be able to do change to the other branch..
+- Create new branch and switch to that
+  - **`git checkout -b <name_of_branch>`**
+  - If there are uncommitted changes, those will be transferred to the new branch
+
+---
+#.center[**Branch stuff #2**]
+- Rename current branch
+  - **`git branch -m <new_branch_name>`**
+- Rename a branch
+  - **`git branch -m <old_branch_name> <new_branch_name>`**
+- Delete a branch
+  - **`git branch -d <name_of_branch>`**
+  - You have to be in a different branch to do this
+  - If no other branch has the changes the branch you want to delete has, you will have to **either merge or force delete** the branch (you'll get a message for this)
+- Force delete a branch
+  - **`git branch -D <name_of_branch>`**
+
+
+---
+class: center, middle
+# Branches which point at different commits
+
+![alt text](images/branches.svg "branches")
+
+---
+#.center[**Time travel**]
+- Go back to a previous commit state
+  - **`git checkout <commit>`**
+      - will take you to a detached HEAD state
+      - at that moment you are not in any branch
+      - if you have uncommitted changes, you wont be able to do this
+
+![alt text](images/detached.svg "detached")
+
+
+---
+name: merge
+#.center[**Merge stuff**]
+- Merge changes from branch to current branch
+  - **`git checkout <name_of_branch>`**
+  - **`git merge <name_of_branch_to_merge>`**
+- If **`<new_branch>` is the same as `<branch>`** with some extra changes, the merge is considered a **fast-forward** merge
+  - aka the pointer for the HEAD of `<branch>` points to the `<new_branch>` HEAD
+  - history will continue to be linear
+- If **`<branch>` has changed since `<new_branch>` was created** the merge will be **non-fast-forward**
+  - aka there will be a commit denoting this merge
+  - history will not be linear
+- To force a linear merge to be non-linear
+  - **`git merge --no-ff <name_of_branch_to_merge>`**
+
+---
+class: center, middle
+fast-forward merge
+
+![alt text](images/ffmerge.png "ffmerge")
+
+---
+class: center, middle
+non fast-forward merge
+
+![alt text](images/noffmerge.png "noffmerge")
+
+---
+#.center[**Merging with conflicts**]
+- If the two branches you're trying to merge, both changed the same part of the same file, Git won't be able to figure out which version to use. Git stops right before the merge commit so that you can resolve the conflicts
+- When you encounter a merge conflict, running the git status command shows you which files need to be resolved
+
+````
+    git merge master
+    Auto-merging lib/hello.html
+    CONFLICT (content): Merge conflict in lib/hello.html
+    Automatic merge failed; fix conflicts and then commit the result.
+````
+> <small>`vim lib/hello.html` and find the conflict</small>
+
+````
+    <<<<<<< HEAD
+        <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+    =======
+        <!-- no style -->
+    >>>>>>> master
+````
+> <small>make the correction and delete the `<<<, ====, >>>>`</small>
+
+- When you're ready to finish the merge, **`git add`** the conflicted file(s) and **`git commit`** to generate the merge commit
+- **`git merge --abort`** aborts the merge
+
+---
+name: delete
+#.center[**(Re)Move stuff**]
+- Move or rename a file (works like *nix mv command)
+  - **`git mv <source> <destination>`**
+- Remove a tracked file:
+  - **`git rm <path_to_file>`**
+  - Will delete the file and stage this action
+  - Will fail if there are any uncommitted changes for that file
+- Remove an untracked file:
+  - **`rm <path_to_file>`**
+  - (duh...)
+- Remove multiple untracked files (too bored to rm each of them):
+  - **`git clean -f <path>`**
+      - If `<path>` is not given, this runs for the current directory
+  - **`git clean -df`** to also remove untracked directories
+  - **`git clean -n`** for a "dry run"
+  - **`git clean -i`** for interactive mode
+- Stage a deletion of a tracked file (if mistakenly used rm instead of git rm)
+  - **`git rm --cached <path_to_file>`**
+
+---
+name: undo
+#.center[**Undo stuff**]
+- Undo the changes of an unstaged file
+  - **`git checkout -- <file_name>`**
+- Undo the staging of a file
+  - **`git reset <file_name>`**
+- Undo a commit
+  - **`git revert <commit_to_undo>`**
+      - This will create a new commit that cancels the previous commit
+
+---
+class: middle, center
+git revert
+
+![alt text](images/revert.png "revert")
+
+---
+class: center, middle
+![alt text](images/wait.jpg "Wait!")
+
+---
+class: center, middle
+#**I don't want to create a new commit to undo the previous commit!**
+**This is not undo!**
+
+---
+class: center, middle
+###**Revert is used so that the project history is left intact**
+**and you can see any change on that repo**
+
+(including the undo actions)
+
+---
+class: center, middle
+![alt text](images/ff1.png "I see what you did there!")
+
+---
+class: center, middle
+###**But there are rumors about a vicious command**
+**with the reset word in it...**
+
+---
+class: center, middle
+![alt text](images/rumors.jpg "I love rumors!")
+
+---
+#.center[**The reset command**]
+- **`git reset <commit>`**
+  - resets the current branch HEAD to `<commit>` and possibly updates the INDEX
+- **`git reset --soft <commit>`**
+  - Does **not** touch the INDEX or the working tree at all
+  - Resets the HEAD to <commit> (just like all modes do)
+  - The changed files are preserved and staged for commit
+- **`git reset --mixed <commit>`**
+  - Resets the INDEX but not the working tree
+  - The changed files are preserved but not marked for commit
+  - **This is the default action for git reset**
+- **`git reset --hard <commit>`**
+  - Resets the INDEX **and the working tree**
+  - Any changes to tracked files in the working tree since <commit> are discarded
+
+---
+class: middle, center
+
+![alt text](images/revert_vs_reset.svg "revert vs reset")
+
+---
+class: middle, center
+# git revert cancels **a specific commit**
+# git reset cancels **up to a specific commit**
+---
+class: center, middle
+#**So.....**
+**`git reset --hard` is the real way to undo?**
+
+---
+class: center, middle
+![alt text](images/will_robinson.jpg "Danger will robinson!")
+
+---
+class: center, middle
+###**This tampers with the history of the project!**
+In case you are working on a collaboration project, if you change the history, you might change the history others are based on
+
+People might (**and probably will**) hunt you down for this..
+
+---
+class: center, middle
+![alt text](images/hunt.jpg "reset hard")
+
+---
+class: middle
+##.center[**When to use?**]
+- Use **`git reset --hard`** only when:
+  - You want to change part of the history that is not yet used in collaboration
+  - You are absolutely sure that you want to tamper with history
+
+---
+name: collab
+class: center, middle
+![alt text](images/collaboration.jpg "collaboration")
+
+---
+#.center[**Working with remotes #1**]
+- What is a remote? What is life?
+  - Remotes are more like bookmarks rather than direct links into other repositories
+      - Residing somewhere else
+      - With different file structure
+  - Life is a story your brain tells to itself
+- Remote branches are just like local branches, except they represent commits from somebody else’s repository
+  - They are stored locally but do not update automatically
+  - You can check out a remote branch just like a local one, but this puts you in a detached HEAD state (just like checking out an old commit)
+
+---
+#.center[**Working with remotes #2**]
+- See curent remotes
+  - **`git remote -v`**
+- Add a remote
+  - **`git remote add <name> <url_or_ssh_to_remote_git_repo>`**
+- Remove a remote
+  - **`git remote rm <remote_name>`**
+- Rename a remote
+  - **`git remote rename <old_name> <new_name>`**
+- Change a remote's url
+  - **`git remote set-url <remote_name> <new_url>`**
+- Check remote branches:
+  - **`git branch -r`**
+- Check all branches (local only & remote ones)
+  - **`git branch -a`**
+
+---
+#.center[**Working with remotes #3**]
+- Clone an existing project from a remote to start working locally
+  - **`git clone <url_or_ssh_to_remote_git_repo>`**
+- Send local branch changes to a remote branch
+  - **`git push <remote_name> <local_branch_name>:<remote_branch_name>`**
+- Delete branch from a remote
+  - **`git push <remote> :<branch_to_delete`**
+- Fetch and update locally all branches from the remote repository
+  - **`git fetch <remote>`**
+- Fetch and update locally specified branch from the remote repository
+  - **`git fetch <remote> <branch>`**
+- Fetch the specified remote’s copy of the current branch and immediately merge it into the local copy
+  - **`git pull <remote>`**
+  - This is the same as:
+     1. **`git fetch <remote>`**
+     2. **`git merge <remote>/<current-branch>`**
+
+---
+class: middle
+# .center[**Hint**]
+.center[**In order to push changes to the remote, your local history must be in sync with the remote history so that the remote branch can fast-forward**]
+
+Otherwise you'll get an error
+````
+error: failed to push some refs to '/path/repo.git'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. Merge the remote changes (e.g. 'git pull')
+hint: before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+````
+
+
+---
+name: moar
+class: center
+#**More use cases**
+
+![alt text](images/Fascinating-Cat-Meme.jpg "")
+
+---
+name: tag
+class: middle, center
+#**Tags**
+(not the facebook ones...)
+
+---
+#.center[**What is tagging & how to tag**]
+- Tagging is a way to name a pointer to a specific commit
+  - yes one more pointer
+- Tag your latest commit (HEAD)
+  - **`git tag <name>`**
+- Tag a specific commit
+  - **`git tag <name> <commit>`**
+- Create a more descriptive tag
+  - **`git tag -a <name> -m "<description>" <commit>`**
+  - **`git tag -a <name> <commit>`** opens the editor for the description
+- Show current tags
+  - **`git tag`**
+- Checkout to a specific tag
+  - **`git checkout <tag_name>`**
+- Pushing tags to the remote
+  - **`git push <push_options_and_branches> --tags`**
+- Delete tag
+  - **`git tag -d <tag_name>`**
+- Change where a tag points
+  - **`git tag -f <tag_name> <commit>`**
+
+---
+class: center, middle
+# tagging illustrated
+
+![alt text](images/tag.svg "tag")
+
+
+---
+name: stash
+#.center[**What is stashing & how to stash**]
+- Stashing is used when you want to store some uncommitted changes for later use
+- Show current stash
+  - **`git stash list`**
+- Stash current changes
+  - **`git stash`**
+- Stash current changes with description
+  - **`git stash save <description>`**
+- Stash a patch of changes
+  - **`git stash -p`** or
+  - **`git stash save -p <description>`**
+- Apply a stashed changed
+  - **`git stash apply <stash_number>`**
+- Delete a stash
+  - **`git stash drop <stash_number>`**
+- Apply latest stashed change and delete it
+  - **`git stash pop`**
+      - If the stash apply creates conflicts, the stash will not be deleted
+      - same as **`git stash apply <stash> && git stash drop <stash>`**
+- Show stashed changes as a patch
+  - **`git stash show -p <stash_number>`**
+
+---
+class: middle, center
+![alt text](images/stash.png "What?")
+
+---
+name: log
+#.center[**More history tricks**]
+Git log supports a lot of different options to meet your history-view needs
+- Show filenames changed for each commit
+  - **`git log --name-only --oneline`**
+- Show history of a file
+  - **`git log --follow <file>`**
+- Brief history view with relative dates (x days ago)
+  - **`git log --pretty=format:"'%C(yellow)%h %ad%Cred%d %Creset%s%Cblue [%cn]'" --decorate --date=relative`**
+- With number of added and deleted lines in decimal notation and pathname without abbreviation
+  - **`git log --pretty=format:"'%C(yellow)%h%Cred%d %Creset%s%Cblue [%cn]'" --decorate --numstat`**
+- Tree like view of current branch history
+  - **`git log --graph --decorate --pretty=oneline --abbrev-commit`**
+- Tree like view of all branches history
+  - **`git log --graph --decorate --pretty=oneline --abbrev-commit --all`**
+
+---
+name: gitconfig
+#.center[**Git configuration file**]
+Git stores configuration options in three separate files, which lets you scope options to individual repositories, users, or the entire system
+- **`~/.gitconfig`** – User-specific settings
+  - used in most of the cases
+- **`<repo>/.git/config`** – Repository-specific settings.
+- **`/etc/gitconfig`** – System-wide settings
+- When options in these files conflict, **local settings override user settings, which override system-wide**
+- Show current git configuration
+  - **`git config --list`**
+
+---
+#.center[**Config example**]
+````
+[core]
+    editor = vim
+    autocrlf = input
+[alias]
+    #Add patch
+    ap = add -p
+    co = checkout
+    ci = commit
+    cim = commit -m
+    br = branch
+    #List oneline branch commits
+    lol = log --graph --decorate --pretty=oneline --abbrev-commit
+    #List oneline commits for all branches
+    lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+
+[user]
+    name = John Paraskevopoulos
+    email = ioparaskev@gmail.com
+````
+---
+name: rhistory
+class: center
+#**Rewriting History**
+![alt text](images/darkside.jpg "dark side")
+
+---
+#.center[**Amend**]
+- Combine the staged changes with the previous commit and replace the previous commit with the resulting snapshot
+  - **`git commit --amend`** will open the editor and let you change the commit message
+  - Running this when there is nothing staged lets you edit the previous commit’s message without altering its snapshot
+  - **`git commit --amend --no-edit`** will **not** open the editor
+- Used mainly when
+  - You forgot to add a file or change to the latest commit
+  ````
+  git add hello.py
+  git commit
+  git add main.py
+  git commit --amend --no-edit
+  ````
+.center[**Remember that you shouldn't do this on public commits (commits that have been pushed to remotes)**]
+
+---
+class: middle, center
+# ammend illustrated
+
+![alt text](images/ammend.png "ammend")
+
+---
+#.center[**Rebase**]
+.center[*rewriting history on steroids*]
+
+- Rebase starts replays commits starting from a specific base (hence the "base")
+  - **`git rebase <base>`** will rebase the current branch onto `<base>`, which can be any kind of commit reference (an ID, a branch name, a tag, or a relative reference to HEAD)
+- Git accomplishes this by creating new commits and applying them to the specified base—it’s literally rewriting your project history
+- Even though the branch might look the same, it’s composed of entirely new commits
+- By default rebase ignores the merge commits.
+  - To keep them use the **`--preserve-merges`** flag
+- Can be used when you want to update changes from a branch so that your changes are after the other branch commits
+- Mainly used with the **`-i`** flag
+- **`git rebase --abort`** to abort the rebase
+
+.center[**Remember that you shouldn't do this on public commits (commits that have been pushed to remotes)**]
+
+---
+class: middle, center
+# rebase illustrated
+
+![alt text](images/rebase.svg "rebase")
+
+---
+#.center[**Rebase -i (interactive)**]
+.center[*rewriting history on interactive steroids*]
+
+- This opens an editor where you can enter commands for each commit to be rebased. You can also reorder the commit listing to change the order of the commits themselves
+- **rebase -i commands**
+  - These commands determine how individual commits will be transferred to the new base.
+  - **p, pick** = use commit
+  - **r, reword** = use commit, but edit the commit message
+  - **e, edit** = use commit, but stop for amending
+  - **s, squash** = use commit, but meld into previous commit (will ask what the commit message for the join will be)
+  - **f, fixup** = like "squash", but discard this commit's log message
+  - **x, exec** = run command (the rest of the line) using shell
+  - **d, drop** = remove commit (you can also remove the line instead of this)
+- Used mainly to clean up a messy history before merging a feature branch into master
+
+.center[**Remember that you shouldn't do this on public commits (commits that have been pushed to remotes)**]
+
+---
+class: middle, center
+# rebase -i illustrated
+
+![alt text](images/rebasei.svg "rebase")
+
+---
+name: rbm
+#.center[**Rebase** vs **Merge**]
+- Both of these commands are designed to integrate changes from one branch into another branch—they just do it in very different ways
+- Merge
+  - Merging is nice because it’s a non-destructive operation. The existing branches are not changed in any way
+  - The feature branch will have an extraneous merge commit every time you need to incorporate upstream changes
+  - **`git pull`** default behaviour
+- Rebase
+  - Much cleaner & linear project history
+  - Loses the context provided by a merge commit—you can’t see when upstream changes were incorporated into the feature
+  - Can be catastrophic if done on public branches & history
+  - **`git pull --rebase`** to *unlock* this feat or **`git config --global branch.autosetuprebase always`**
+
+---
+class: middle, center
+# destructive rebase illustrated
+
+![alt text](images/drebase.svg "rebase")
+
+---
+class: middle, center
+#**Git will warn you if you try to push up rewritten history**
+### **`git push -f`**
+will ignore this *(although the forced push action will be recorded)*
+
+---
+class: middle, center
+![alt text](images/fpush.png "force push")
+
+---
+name: extra
+class: center
+# **Lightning extras**
+![alt text](images/boredom.jpg "")
+
+---
+# .center[**Extra stuff! #1**]
+
+- Compare branches (what will it take to go from one branch to another)
+  - **`git diff <branch>..<other_branch>`**
+- Show only filenames that are different moving from one branch to another
+  - **`git diff --name-status <branch>..<other_branch>`**
+- Show branches that have all their changes merged or not merged
+  - **`git branch --merged`**
+  - **`git branch --no-merged`**
+  - adding **`--remotes`** flag will also show for remote branches
+- Show commits that are not in branch2 but in branch1
+  - **`git cherry -v branch2 branch1`**
+
+---
+# .center[**Extra stuff! #2**]
+- Apply a file snapshot from a specific commit/branch
+  - **`git checkout <commit_or_branch> <path_to_file>`**
+- Copy a specific commit
+  - **`git cherry-pick <commit>`**
+  - the copy will have a different hash! (because of the hashing mechanism git uses)
+- Create a patch from a commit
+  - **`git show <commit> > patch.txt`**
+- Create one patch for multiple commits
+  - **`git diff <commit_1> <commit_2> <commit_3> > patch.txt`**
+- Create a patch in mailbox format
+  - **`git format-patch <since_commit>`** or
+  - **`git format-patch <from_commit>..<until_commit>`** or
+  - **`git format-patch <branch_to_compare_with>`**
+- Apply a patch
+  - **`git apply patch_file`**
+
+---
+# .center[**Extra stuff! #3**]
+- Show the user responsible for each line in a file
+  - **`git blame <file>`**
+- Show reference log
+  - **`git reflog`**
+  - reflog is a mechanism to record when the tip of branches are updated
+  - aka a record of all commits that are or were referenced in your repo at any time
+  - understanding the reflog means you can't really lose data from your repo once it's been committed. If you accidentally reset to an older commit, or rebase wrongly, or any other operation that visually "removes" commits, you can use the reflog to see where you were before and **`git reset --hard` back to that ref** to restore your previous state. Remember, refs imply not just the commit but the entire history behind it
+- Delete all these old remote branches that do not exist in the remote anymore
+  - **`git remote prune <remote_name>`**
+  - **`git fetch --prune <remote_name>`** to update the local branches and prune the obsolete ones in one move. Same as:
+      1. **`git fetch <remote_name>`**
+      2. **`git remote prune <remote_name>`**
+
+---
+# .center[**Extra stuff! #4**]
+- Use binary search to find the commit that introduced a bug
+  1. **`git bisect start`**
+      - **`git bisect reset`** at any point cancels the procedure
+  2. mark the commit that is known to be bad
+      - **`git bisect bad <commit_if_needed>`**
+  3. mark a commit that is known to be good
+      - **`git bisect good <commit>`**
+  4. git checkouts in the middle
+  5. mark if the current commit is good or bad as in step 2 or 3
+  6. do step **5** until git bisect decides which commit introduced the problem
+  7. **`git bisect reset`** to get back to your branch HEAD
+
+---
+name: workflow
+# .center[**Git strategies & workflows**]
+
+.center[![alt text](images/strategy.jpg "strategy")]
+
+---
+# .center[**The SVN-like workflow**]
+.center[(the one for the svn fans)]
+
+- One branch (trunk is master)
+- Everyone pushes to that branch
+- No force push
+- **Pros**
+    - SVN users will feel like home
+- **Cons**
+    - One branch for testing / production etc
+    - Collaboration for features will have to either use another unofficial remote or go the old way (exchanging diffs)
+    - Needs a tool for code reviews making is more difficult
+
+---
+# .center[**Feature Branch Workflow**]
+.center[(the one with the branches overflow)]
+- master is still the main branch representing the official repo
+- users create and push new branches for features / issues
+- users open pull/merge requests to add their changes to master
+- review takes place
+- branches are merged in master
+- **Pros**
+  - Easier collaboration
+  - Promotes code reviews
+- **Cons**
+  - One branch for testing / production etc
+  - Non linear merges that don't have conflict might break the repo
+
+---
+# .center[**[Gitflow](http://nvie.com/posts/a-successful-git-branching-model/) Workflow**]
+.center[(the one where you follow the manual)]
+- **master branch for releases**
+  - tags for releases
+- **develop branch for integration**
+- features / fixes have their own branches
+  - when complete and reviewed they merge to develop branch
+- when develop branch has enough features / fixes a **release branch** is created from the develop branch
+  - the release branch can get only bug fixes and other release related commits (documentation etc)
+  - after release testing is ok, release branch is merged into master and tagged with the new release version
+  - release branch gets merged in develop branch (which may have progressed until then)
+- in case of critical bug in production (master) branch, a new **hotfix branch** is created directly from master
+  - when hotfix is ready, it is merged directly in master, tagged and also merged in develop branch
+
+---
+# .center[**[Gitflow](http://nvie.com/posts/a-successful-git-branching-model/) Workflow**]
+.center[(the one where you follow the manual)]
+- **Pros**
+  - Agile workflow that never blocks continuous production
+  - Can minimize the risks when creating a new release
+- **Cons**
+  - Somewhat complex (one page needed to describe it)
+  - Extending this workflow (adding more testing branches for extra leveling) can add even more complexity
+  - Complexity leads to mistakes
+
+---
+# .center[**Forking Workflow**]
+.center[(the one with the thousand remotes)]
+- Everyone forks the project from the official repository
+  - This creates a clone of the repository in a private repository on the same server
+  - Access to the private repository must be granted specifically to anyone (other than the user) wanting to contribute to that repository
+- Users make their changes in their repositories (commits, branches etc)
+- When they want something to be added to the official repository, the make a request to merge their repository changes to the official repository branch (github & bitbucket calls them pull requests, gitlab calls them merge requests)
+- **Pros**
+  - Integrated and used in many Git repository hosting services (github, bitbucket, gitlab)
+  - Can be used as a ***plugin*** to the previous workflows
+- **Cons**
+  - Having links to multiple remotes might confuse some people and might result in big (disk space) local projects
+
+---
+# .center[**Your own workflow?**]
+.center[![alt text](images/home.jpg "git graph")]
+
+---
+name: mtheory
+class: center
+# **Git internals**
+aka the love for DAG (directed acyclic graphs)
+
+![alt text](images/simple.jpg "")
+
+---
+#.center[**VCS theory**]
+A version control system usually has three core functional requirements
+- Storing content
+  - Delta-based changeset
+  - Directed acyclic graph (DAG) content representation
+- Tracking changes to the content (history including merge metadata)
+  - Linear history
+  - Directed acyclic graph for history
+- Distributing the content and history with collaborators
+  - Local-only
+  - Central server
+  - Distributed model
+
+---
+#.center[**Storing content**]
+Most common design choices for storing content in the VCS world are with a delta-based changeset, or with directed acyclic graph (DAG) content representation
+- Git stores content as a directed acyclic graph using different types of objects
+- Git has four basic primitive objects that every type of content in the local repository is built around.
+- The primitive object types are:
+    - Tree
+    - Blob
+    - Commit
+    - Tag
+
+---
+#.center[**Trees and blobs**]
+Git stores content in a manner similar to a UNIX filesystem, but a bit simplified. All the content is stored as tree and blob objects, with trees corresponding to UNIX directory entries and blobs corresponding more or less to inodes or file contents.
+
+- Tree
+  - A single tree object contains one or more tree entries, each of which contains a SHA-1 pointer to a blob or subtree with its associated mode, type, and filename
+- Blob
+  - a blob represents a file stored in the repository
+
+---
+class: middle, center
+# **Trees and blobs**
+![alt text](images/tree.png "")
+
+---
+.center[![alt text](images/interesting.png "interesting")]
+
+---
+#.center[**Commits and tags**]
+- Commit
+  - A commit points to a tree representing the top-level directory for that commit as well as parent commits and standard attributes.
+  - A commit object contains three things:
+    1. A set of files, reflecting the state of a project at a given point in time
+    2. References to parent commit objects
+        - The parent commit objects are those commits that were edited to produce the subsequent state of the project
+        - A project always has one commit object with no parents. This is the first commit made to the project repository
+    3. An SHA1 name, a 40-character string that uniquely identifies the commit object
+        - The name is composed of a hash of relevant aspects of the commit, so identical commits will always have the same name
+        - If two objects are identical they will have the same SHA.
+        - If an object was only copied partially or another form of data corruption occurred, recalculating the SHA of the current object will identify such corruption.
+- Tag
+  - a tag has a name and points to a commit at the point in the repository history that the tag represents.
+
+---
+class: middle, center
+# **Commits illustrated**
+![alt text](images/commit_object.png "")
+
+
+---
+class: middle, center
+# **Git objects illustrated for the UML lovers**
+
+![alt text](images/object-hierarchy.png "object")
+
+---
+#.center[**Tracking changes**]
+- Commit and Merge Histories
+  - Git uses DAG also for history (vs linear CVS) where each commit contains metadata about its ancestors
+  - A commit in Git can have zero or many (theoretically unlimited) parent commits which allows Git to support two properties
+  - The history of a file is linked all the way up its directory structure (via nodes representing directories) to the root directory, which is then linked to a commit node. This commit node, in turn, can have one or more parents.
+      1. When a content (i.e., file or directory) node in the graph has the same reference identity (the SHA in Git) as that in a different commit, the two nodes are guaranteed to contain the same content, allowing Git to short-circuit content diffing efficiently
+      2. When merging two branches we are merging the content of two nodes in a DAG. The DAG allows Git to "efficiently" (as compared to the RCS family of VCS) determine common ancestors
+
+---
+#.center[**Distribution**]
+Git uses the Distributed model where there will often be publicly accessible repositories for collaborators to "push" to, but commits can be made locally and pushed to these public nodes later, allowing offline work
+
+---
+class: middle, center
+![alt text](images/end.jpg "")
+
+---
+name: reference
+# .center[**References and more links**]
+- **References**
+    - [Most graph images and some references are from atlasian](https://www.atlassian.com/git/tutorials/)
+    - [Official git website with lots of stuff and free Pro Git book](https://git-scm.com/)
+    - [Git architecture](http://aosabook.org/en/git.html)
+
+- **Guides and tutorials**
+    - [Github training series](https://try.github.io/)
+    - [Learn git branching](http://learngitbranching.js.org/)
+    - [
+    Visualizing Git Concepts with D3](https://onlywei.github.io/explain-git-with-d3/)
+    - [Help for helps](https://help.github.com/articles/good-resources-for-learning-git-and-github/)
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
