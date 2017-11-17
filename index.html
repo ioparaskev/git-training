@@ -48,7 +48,7 @@ more shell commands to learn
   - [Rebase vs merge](#rbm)
 5. [Lightning extras](#extra)
 6. [Git strategies](#workflow)
-7. [Bonus theory](#mtheory)
+7. [Bonus theory and plumbing](#mtheory)
 
 ---
 name: intro
@@ -61,15 +61,18 @@ class: center, middle
 
 ---
 class: center, middle
+Something related to **Github**?
+
+---
+class: center, middle
+## **NO**
+
+---
+class: center, middle
 something related to graphs?
 
 
 ![alt text](images/git_graph.svg "git graph")
-
----
-class: center, middle
-## git is a **DVCS**
-aka **distributed** version control system
 
 ---
 class: center, middle
@@ -78,6 +81,12 @@ class: center, middle
 well not exactly like svn..
 
 ---
+
+class: center, middle
+## git is a **DVCS**
+aka **distributed** version control system
+---
+
 class: center, middle
 # Why git is **not** svn
 
@@ -251,19 +260,19 @@ name: recap
 - **Untracked** means git will not track changes on that file, because file is not considered to be a part of the repo
 - **Not staged** (*or unstaged*) means that changes on that file(s) (or parts of it) will not be
 committed
-- **HEAD** is a reference to the latest commit in your current branch
+- **HEAD** is a reference a commit (usually the latest commit in your current branch)
 
 ---
 name: basic
 class: center, middle
-# **Enough with the theory...**
+# **Enough about theory...**
 
 best way to understand is to
 try to put it into work
 
 ![alt text](images/2009-01-26-who-needs-git_2.png "get rid of git")
 
-###### last change to escape now
+##### last chance to escape now
 
 ---
 #.center[**First steps**]
@@ -313,7 +322,8 @@ name: staging
   - **`git diff`**
 - Show the staged changes
   - **`git diff --staged `**
-
+- Ignore whitespace changes
+  - **`git diff -w`**
 ---
 name: commit
 #.center[**Commit staged files**]
@@ -770,8 +780,7 @@ class: center
 
 ---
 class: middle, center
-# ammend illustrated
-
+### **ammend illustrated**
 ![alt text](images/ammend.png "ammend")
 
 ---
@@ -857,54 +866,110 @@ class: center
 ![alt text](images/boredom.jpg "")
 
 ---
-# .center[**Extra stuff! #1**]
+# .center[**Branch related**]
 
-- Compare branches (what will it take to go from one branch to another)
-  - **`git diff <branch>..<other_branch>`**
-- Show only filenames that are different moving from one branch to another
-  - **`git diff --name-status <branch>..<other_branch>`**
 - Show branches that have all their changes merged or not merged
   - **`git branch --merged`**
   - **`git branch --no-merged`**
   - adding **`--remotes`** flag will also show for remote branches
-- Show commits that are not in branch2 but in branch1
-  - **`git cherry -v branch2 branch1`**
+- Delete all these old remote branches that do not exist in the remote anymore
+ - **`git remote prune <remote_name>`**
+ - **`git fetch --prune <remote_name>`** to update the local branches and prune the obsolete ones in one move. Same as:
+     1. **`git fetch <remote_name>`**
+     2. **`git remote prune <remote_name>`**
 
 ---
-# .center[**Extra stuff! #2**]
+# .center[**Comparison related**]
+- Compare branches (what will it take to go from one branch to another)
+  - **`git diff <branch>..<other_branch>`**
+- Show commits that are not in branch2 but in branch1
+  - **`git cherry -v branch2 branch1`**
+  - **`git log --oneline --right-only branch2..branch1`** shows the same info (but in different format)
+- Show only filenames that are different moving from one branch to another
+  - **`git diff --name-status <branch>..<other_branch>`**
+
+
+---
+# .center[**Commit related**]
+- Stop tracking a tracked file
+  - **`git update-index --assume-unchanged <path_to_file>`**
+  - Adding the file to `.gitignore` will not work because the file is tracked alread
+  - **`git update-index --no-assume-unchanged <path_to_file>`** to start tracking it again
 - Apply a file snapshot from a specific commit/branch
   - **`git checkout <commit_or_branch> <path_to_file>`**
 - Copy a specific commit
   - **`git cherry-pick <commit>`**
   - the copy will have a different hash! (because of the hashing mechanism git uses)
+---
+
+# .center[**History related**]
+- Show me the changes from 1/1/2010 until now
+  - **`git whatchanged --since="1/1/2010"`**
+  - **`git log --since="1/1/2010"`** is a similar command
+- Show me the changes since one week ago until yesterday
+  - **`git log --since="1 week ago" --until="yesterday"`**
+- Show the contents of the file in a <hash_ref> state
+  - **`git show <hash_ref>:<local_path_to_file>`**
+- Show the user responsible for each line in a file
+  - **`git blame <file>`**
+---
+
+name: extra
+class: center
+# **More please?**
+![alt text](images/tired.jpg  "")
+
+---
+class: middle, center
+#**Revision specifiers fast-track**
+Git supports a special syntax to point to specific revisions. Most commands support this syntax
+
+Whenever you see a **`@`** or **`^`** or **`~`** or **`..`** or **`...`** this is a reference specifier
+
+[git-scm.com/docs/gitrevisions](https://git-scm.com/docs/gitrevisions) for detailed info
+---
+
+# .center[**Revision specifier cases**]
+- Reset (soft) 5 commits before HEAD of master
+  - **`git reset 'master@{5}'`** (uses rev-parse behind the scenes)
+  - same as finding the `<hash-ref>` of the 5th-before HEAD-of-master commit and `reset <hash-ref>`
+  - same as **`git reset master~5`**
+  - **NOT** the same as **`git reset 'HEAD@{5}'`**
+- Revert the commit that was done 1 month ago
+  - **`git revert 'master@{"1 month ago"}'`**
+- Revert all the commits from 1 month ago until now
+  - **`git revert --no-commit 'master@{"1 month ago"}'..HEAD`**
+  - You need the `no-commit` to avoid having 1 revert-commit-per-hash until the HEAD. This will simply stage them so that you can have 1 revert commit
+- You can use **`git rev-parse`** to see which hash reference does git understand when you use a specifier
+  - **`git rev-parse master`** will show the hash that git sees as the HEAD of master
+  - **`git rev-parse 'master@{"1 month ago"}'..master`** will show the hash that git sees as the commit that was done 1 month ago and the hash it sees as HEAD of master
+---
+
+# .center[**The life of HEAD**]
+- Show reference log
+ - **`git reflog`**
+ - reflog is a mechanism to record when the tip of the HEAD is updated
+ - **`HEAD@{N}`** refers to the tip of the HEAD as is depicted in the reflog
+ - aka a record of all commits that are or were referenced in your repo at any time
+ - understanding the reflog means you can't really lose data from your repo once it's been committed.
+   If you accidentally reset to an older commit, or rebase wrongly, or any other operation that visually "removes" commits, you can use the reflog to see where you were before and **`git reset --hard` back to that ref** to restore your previous state. Remember, refs imply not just the commit but the entire history behind it
+- Git can find which commit objects are not referenced by any tree
+---
+
+# .center[**Patching fast-track**]
 - Create a patch from a commit
   - **`git show <commit> > patch.txt`**
 - Create one patch for multiple commits
   - **`git diff <commit_1> <commit_2> <commit_3> > patch.txt`**
 - Create a patch in mailbox format
   - **`git format-patch <since_commit>`** or
-  - **`git format-patch <from_commit>..<until_commit>`** or
+  - **`git format-patch <since_commit>..<until_commit>`** or
   - **`git format-patch <branch_to_compare_with>`**
 - Apply a patch
   - **`git apply patch_file`**
-
 ---
-# .center[**Extra stuff! #3**]
-- Show the user responsible for each line in a file
-  - **`git blame <file>`**
-- Show reference log
-  - **`git reflog`**
-  - reflog is a mechanism to record when the tip of branches are updated
-  - aka a record of all commits that are or were referenced in your repo at any time
-  - understanding the reflog means you can't really lose data from your repo once it's been committed. If you accidentally reset to an older commit, or rebase wrongly, or any other operation that visually "removes" commits, you can use the reflog to see where you were before and **`git reset --hard` back to that ref** to restore your previous state. Remember, refs imply not just the commit but the entire history behind it
-- Delete all these old remote branches that do not exist in the remote anymore
-  - **`git remote prune <remote_name>`**
-  - **`git fetch --prune <remote_name>`** to update the local branches and prune the obsolete ones in one move. Same as:
-      1. **`git fetch <remote_name>`**
-      2. **`git remote prune <remote_name>`**
 
----
-# .center[**Extra stuff! #4**]
+# .center[**Bisect fast-track**]
 - Use binary search to find the commit that introduced a bug
   1. **`git bisect start`**
       - **`git bisect reset`** at any point cancels the procedure
@@ -1030,6 +1095,9 @@ Most common design choices for storing content in the VCS world are with a delta
     - Tag
 
 ---
+.center[![alt text](images/interesting.png "interesting")]
+
+---
 #.center[**Trees and blobs**]
 Git stores content in a manner similar to a UNIX filesystem, but a bit simplified. All the content is stored as tree and blob objects, with trees corresponding to UNIX directory entries and blobs corresponding more or less to inodes or file contents.
 
@@ -1042,9 +1110,6 @@ Git stores content in a manner similar to a UNIX filesystem, but a bit simplifie
 class: middle, center
 # **Trees and blobs**
 ![alt text](images/tree.png "")
-
----
-.center[![alt text](images/interesting.png "interesting")]
 
 ---
 #.center[**Commits and tags**]
