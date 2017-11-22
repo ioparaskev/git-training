@@ -961,7 +961,6 @@ Whenever you see a **`@`** or **`^`** or **`~`** or **`..`** or **`...`** this i
  - aka a record of all commits that are or were referenced in your repo at any time
  - understanding the reflog means you can't really lose data from your repo once it's been committed.
    If you accidentally reset to an older commit, or rebase wrongly, or any other operation that visually "removes" commits, you can use the reflog to see where you were before and **`git reset --hard` back to that ref** to restore your previous state. Remember, refs imply not just the commit but the entire history behind it
-- Git can find which commit objects are not referenced by any tree
 ---
 
 # .center[**Patching fast-track**]
