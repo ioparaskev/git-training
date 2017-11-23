@@ -321,8 +321,11 @@ name: staging
 ---
 #.center[**Show changes**]
 - Show changes compared to the HEAD
+  - **`git diff HEAD`**
+- Show changes compared to the staging area
   - **`git diff`**
-- Show the staged changes
+  - fallsback to comparison with the HEAD if nothing is staged
+- Show the staged changes compared to the HEAD
   - **`git diff --staged `**
 - Ignore whitespace changes
   - **`git diff -w`** or
