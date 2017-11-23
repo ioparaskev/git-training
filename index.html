@@ -671,6 +671,7 @@ class: middle, center
   - **`git tag`**
 - Checkout to a specific tag
   - **`git checkout <tag_name>`**
+  - this puts you in a detached HEAD state
 - Pushing tags to the remote
   - **`git push <push_options_and_branches> --tags`**
 - Delete tag
@@ -689,6 +690,8 @@ class: center, middle
 name: stash
 #.center[**What is stashing & how to stash**]
 - Stashing is used when you want to store some uncommitted changes for later use
+  - Move them out of the way (stash them) so as to have a clean *working tree*
+  - Stashing follows the concept of a stack where you push to the **top of the list**
 - Show current stash
   - **`git stash list`**
 - Stash current changes
@@ -845,10 +848,11 @@ name: rbm
 - Merge
   - Merging is nice because it’s a non-destructive operation. The existing branches are not changed in any way.
   - The feature branch will have an extraneous merge commit every time you decide to incorporate upstream changes
+  - If not used sparingly, merging can create a history that is very hard to follow; it may also accidentally introduce unwanted commits in the history (the *spaghetti merge* problem).
   - Merging is the default behavior for **`git pull`**
 - Rebase
   - Much cleaner & linear project history
-  - Loses the context provided by a merge commit—you can’t see when upstream changes were incorporated into the feature
+  - Rebasing loses the context provided by a merge commit—you won’t see how (when) distinct sets of changes were brought together
   - Rebasing can be catastrophic if done on public branches & history
   - **`git pull --rebase`** to *unlock* this feat or **`git config --global branch.autosetuprebase always`**
 
