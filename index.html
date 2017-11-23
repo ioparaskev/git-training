@@ -607,7 +607,7 @@ class: center, middle
   - **`git remote set-url <remote_name> <new_url>`**
 - Check remote branches:
   - **`git branch -r`**
-- Check all branches (local only & remote ones)
+- Check all branches (local & remote ones)
   - **`git branch -a`**
 
 ---
@@ -675,7 +675,7 @@ class: middle, center
   - **`git push <push_options_and_branches> --tags`**
 - Delete tag
   - **`git tag -d <tag_name>`**
-- Change where a tag points
+- Change the commit a tag points to
   - **`git tag -f <tag_name> <commit>`**
 
 ---
@@ -695,10 +695,10 @@ name: stash
   - **`git stash`**
 - Stash current changes with description
   - **`git stash save <description>`**
-- Stash a patch of changes
+- Stash some parts of changes
   - **`git stash -p`** or
   - **`git stash save -p <description>`**
-- Apply a stashed changed
+- Apply a stashed change
   - **`git stash apply <stash_number>`**
 - Delete a stash
   - **`git stash drop <stash_number>`**
@@ -738,7 +738,7 @@ Git stores configuration options in three separate files, which lets you scope o
   - used in most of the cases
 - **`<repo>/.git/config`** – Repository-specific settings.
 - **`/etc/gitconfig`** – System-wide settings
-- When options in these files conflict, **local settings override user settings, which override system-wide**
+- When options in these files conflict, **local settings override user settings, which override system-wide settings**
 - Show current git configuration
   - **`git config --list`**
 
@@ -774,7 +774,7 @@ class: center
 #.center[**Amend**]
 - Combine the staged changes with the previous commit and replace the previous commit with the resulting snapshot
   - **`git commit --amend`** will open the editor and let you change the commit message
-  - Running this when there is nothing staged lets you edit the previous commit’s message without altering its snapshot
+  - Running this when there is nothing staged lets you edit the previous commit’s message without altering its' content
   - **`git commit --amend --no-edit`** will **not** open the editor
 - Used mainly when
   - You forgot to add a file or change to the latest commit
@@ -788,21 +788,22 @@ class: center
 
 ---
 class: middle, center
-### **ammend illustrated**
-![alt text](images/ammend.png "ammend")
+### **amend illustrated**
+![alt text](images/ammend.png "amend")
 
 ---
 #.center[**Rebase**]
 .center[*rewriting history on steroids*]
 
-- Rebase starts replays commits starting from a specific base (hence the "base")
-  - **`git rebase <base>`** will rebase the current branch onto `<base>`, which can be any kind of commit reference (an ID, a branch name, a tag, or a relative reference to HEAD)
+- Rebase *replays* commits starting from a specific `<base>` commit
+  - **`git rebase <base>`** will rebase the current branch on `<base>`, which can be any kind of commit reference (an ID, a branch name, a tag, a ref relative to HEAD)
 - Git accomplishes this by creating new commits and applying them to the specified base—it’s literally rewriting your project history
 - Even though the branch might look the same, it’s composed of entirely new commits
-- By default rebase ignores the merge commits.
+- By default rebase ignores merge commits.
   - To keep them use the **`--preserve-merges`** flag
-- Can be used when you want to update changes from a branch so that your changes are after the other branch commits
-- Mainly used with the **`-i`** flag
+- Rebase can be used when you want to update changes in a branch so that they come after commits in the other branch
+  - thus producing linear history
+- Rebase is often used interactively, giving the **`-i`** option
 - **`git rebase --abort`** to abort the rebase
 
 .center[**Remember that you shouldn't do this on public commits (commits that have been pushed to remotes)**]
@@ -817,17 +818,17 @@ class: middle, center
 #.center[**Rebase -i (interactive)**]
 .center[*rewriting history on interactive steroids*]
 
-- This opens an editor where you can enter commands for each commit to be rebased. You can also reorder the commit listing to change the order of the commits themselves
-- **rebase -i commands**
+- This opens an editor where you can enter commands for each commit to be rebased. You can also reorder the list to change the order for applying these commits
+- **interactive rebase commands**
   - These commands determine how individual commits will be transferred to the new base.
   - **p, pick** = use commit
   - **r, reword** = use commit, but edit the commit message
   - **e, edit** = use commit, but stop for amending
-  - **s, squash** = use commit, but meld into previous commit (will ask what the commit message for the join will be)
+  - **s, squash** = use commit, but meld into previous commit (you will be prompted for the squashed commit message)
   - **f, fixup** = like "squash", but discard this commit's log message
   - **x, exec** = run command (the rest of the line) using shell
   - **d, drop** = remove commit (you can also remove the line instead of this)
-- Used mainly to clean up a messy history before merging a feature branch into master
+- Interactive rebase is often used to clean up a messy history before merging a feature branch into master
 
 .center[**Remember that you shouldn't do this on public commits (commits that have been pushed to remotes)**]
 
@@ -835,20 +836,20 @@ class: middle, center
 class: middle, center
 # rebase -i illustrated
 
-![alt text](images/rebasei.svg "rebase")
+![alt text](images/rebasei.svg "interactive rebase")
 
 ---
 name: rbm
 #.center[**Rebase** vs **Merge**]
 - Both of these commands are designed to integrate changes from one branch into another branch—they just do it in very different ways
 - Merge
-  - Merging is nice because it’s a non-destructive operation. The existing branches are not changed in any way
-  - The feature branch will have an extraneous merge commit every time you need to incorporate upstream changes
-  - **`git pull`** default behaviour
+  - Merging is nice because it’s a non-destructive operation. The existing branches are not changed in any way.
+  - The feature branch will have an extraneous merge commit every time you decide to incorporate upstream changes
+  - Merging is the default behavior for **`git pull`**
 - Rebase
   - Much cleaner & linear project history
   - Loses the context provided by a merge commit—you can’t see when upstream changes were incorporated into the feature
-  - Can be catastrophic if done on public branches & history
+  - Rebasing can be catastrophic if done on public branches & history
   - **`git pull --rebase`** to *unlock* this feat or **`git config --global branch.autosetuprebase always`**
 
 ---
@@ -859,7 +860,7 @@ class: middle, center
 
 ---
 class: middle, center
-#**Git will warn you if you try to push up rewritten history**
+#**Git will warn you if you try to push rewritten history**
 ### **`git push -f`**
 will ignore this *(although the forced push action will be recorded)*
 
@@ -876,7 +877,7 @@ class: center
 ---
 # .center[**Branch related**]
 
-- Show branches that have all their changes merged or not merged
+- Show branches that have all their changes merged or not
   - **`git branch --merged`**
   - **`git branch --no-merged`**
   - adding **`--remotes`** flag will also show for remote branches
